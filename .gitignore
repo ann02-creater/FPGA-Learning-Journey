@@ -1,0 +1,51 @@
+# Vivado generated files and directories
+*.bit
+*.bin
+*.log
+*.jou
+*.tmp
+*~
+
+# Vivado project directories
+.cache/
+.runs/
+.sim/
+.ip_user_files/
+*.gen/
+*.hw/
+*.ip/
+*.runs/
+*.cache/
+*.tmp/
+
+# Vivado project files
+*.xpr
+*.xpf
+*.wcfg
+*.wdb
+
+# Synthesis and implementation reports
+*.rpt
+*.dcp
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Python cache (for scripts)
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor files
+*.bak
+*.orig
+
+# Operating system files
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
