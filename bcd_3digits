@@ -1,0 +1,54 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2025/09/25 10:51:26
+// Design Name: 
+// Module Name: bcd_3digits
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module bcd_3digits(
+input wire clk ,
+input wire reset,
+input wire inc,
+output wire [3:0] q0, q1, q2,
+output wire TC
+    );
+    
+    wire tc0,tc1;
+    
+    bcd_counter cnt0(
+    .clk(clk),
+    .reset(reset),
+    .inc(inc),
+    .Q(q0),
+    .TC(tc0));
+    
+     bcd_counter cnt1(
+    .clk(clk),
+    .reset(reset),
+    .inc(tc0),
+    .Q(q1),
+    .TC(tc1));
+    
+     bcd_counter cnt2(
+    .clk(clk),
+    .reset(reset),
+    .inc(tc1),
+    .Q(q2),
+    .TC(TC));
+    
+endmodule
