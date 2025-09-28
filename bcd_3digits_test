@@ -1,0 +1,52 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2025/09/25 10:59:14
+// Design Name: 
+// Module Name: bcd_3digits_test
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module bcd_3digits_test();
+ reg clk;
+ reg reset;
+ reg inc;
+ wire [3:0] q0, q1, q2;
+ wire TC;
+ 
+ bcd_3digits uut(clk, reset, inc, q0, q1, q2,TC);
+    
+always#1 clk =~clk;
+initial begin 
+clk =0;
+reset =1;
+inc=0;
+
+#20; reset =0;
+#10; inc =1;
+#200; inc =0;
+#100; inc=1;
+#200; inc=0;
+#100; reset =1;
+#20; reset =0;
+inc =1;
+#300;
+$stop;
+
+$stop;
+
+end
+endmodule
