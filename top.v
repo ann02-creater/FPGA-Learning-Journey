@@ -1,21 +1,39 @@
-module top(
-    input [3:0] data0, data1, data2, data3,
-    input [1:0] s,
-    output [6:0] out
-);
-wire [3:0] selected_data;
+`timescale 1ns / 1ps
 
-mux_4bit m0( 
-.out(selected_data),
-.i0(data0),
-.i1(data1),
-.i2(data2),
-.i3(data3),
-.s(s)
+module simple_timer_top(
+    input wire clk,        
+    input wire reset,       
+    output wire [6:0] seg,  
+    output wire [7:0] AN   
 );
 
-ss_decoder d0(
-.in(selected_data), 
-.seg_out(out)
-);
+    assign AN = 8'b11111110; 
+    wire tc_1s;           
+    wire [3:0] seconds;     
+    wire tc_seconds;       
+
+ 
+    clock_divider U0 (
+        .clk(clk),
+        .reset(reset),
+        .en(1'b1),          
+        .tc_1sec(tc_1s)
+    );
+
+
+    counter_bcd U1 (
+        .clk(clk),
+        .reset(reset),
+        .en(tc_1s),       
+        .Q(seconds),
+        .TC(tc_seconds)     
+    );
+
+   
+    ssdecoder U_DECODER (
+        .data(seconds),
+        .seg(seg)
+    );
+
+
 endmodule
