@@ -6,13 +6,25 @@ module VGA_top(
     
     localparam COLOR_WHITE  = 12'b1111_1111_1111;
     localparam COLOR_RED = 12'b0000_0000_1111;
+    localparam COLOR_BLUE   = 12'b1111_0000_0000;
+    localparam COLOR_GREEN  = 12'b0000_1111_0000;
+    localparam COLOR_YELLOW = 12'b0000_1111_1111;
     localparam COLOR_BLACK  = 12'b0000_0000_0000;
     
-    localparam BLOCK_WIDTH  = 100;
-    localparam BLOCK_HEIGHT = 80;
+    localparam BLOCK_WIDTH  = 50;
+    localparam BLOCK_HEIGHT = 50;
+
+    localparam BLOCK_WIDTH_1  = 30;
+    localparam BLOCK_HEIGHT_1 = 300;
     
-    localparam BLOCK_S_X    = 100;
-    localparam BLOCK_S_Y    = 200;
+    localparam BLOCK_S_X    = 50;
+    localparam BLOCK_S_Y    = 50;
+    localparam BLOCK_B1_X = 200;
+    localparam BLOCK_B1_Y = 0;
+    localparam BLOCK_B2_X = 400;
+    localparam BLOCK_B2_Y = 100;
+    localparam BLOCK_Y3_X = 500;
+    localparam BLOCK_Y3_Y = 300;
     
     wire video_on,  block_on;
     wire pixel_clk;
@@ -45,16 +57,44 @@ module VGA_top(
         else
         begin
             if(block_on)
+            if((BLOCK_S_X <= pixel_x ) && (pixel_x < BLOCK_S_X + BLOCK_WIDTH)
+               && (BLOCK_S_Y <= pixel_y) && (pixel_y < BLOCK_S_Y + BLOCK_HEIGHT))
                 vga_next = COLOR_RED;
+            else if((BLOCK_B1_X <= pixel_x ) && (pixel_x < BLOCK_B1_X + BLOCK_WIDTH_1)
+                     && (BLOCK_B1_Y <= pixel_y) && (pixel_y < BLOCK_B1_Y + BLOCK_HEIGHT_1))
+                vga_next = COLOR_BLUE;
+            else if((BLOCK_B2_X <= pixel_x ) && (pixel_x < BLOCK_B2_X + BLOCK_WIDTH_1)
+                     && (BLOCK_B2_Y <= pixel_y) && (pixel_y < BLOCK_B2_Y + BLOCK_HEIGHT_1))  
+                vga_next = COLOR_BLUE;
+            else if((BLOCK_Y3_X <= pixel_x ) && (pixel_x < BLOCK_Y3_X + BLOCK_WIDTH)
+                     && (BLOCK_Y3_Y <= pixel_y) && (pixel_y < BLOCK_Y3_Y + BLOCK_HEIGHT))  
+                vga_next = COLOR_YELLOW;
             else
-                vga_next =  COLOR_WHITE;
+                vga_next =  COLOR_GREEN;
         end
     end
     
     assign block_on = (BLOCK_S_X <= pixel_x )
                       && (pixel_x < BLOCK_S_X + BLOCK_WIDTH)
                       && (BLOCK_S_Y <= pixel_y)
-                      && (pixel_y < BLOCK_S_Y + BLOCK_HEIGHT);        
+                      && (pixel_y < BLOCK_S_Y + BLOCK_HEIGHT) 
+
+                      && (BLOCK_B1_X <= pixel_x )   
+                        && (pixel_x < BLOCK_B1_X + BLOCK_WIDTH_1)
+                        && (BLOCK_B1_Y <= pixel_y)
+                        && (pixel_y < BLOCK_B1_Y + BLOCK_HEIGHT_1)
+
+                        && (BLOCK_B2_X <= pixel_x )
+                        && (pixel_x < BLOCK_B2_X + BLOCK_WIDTH_1)
+                        && (BLOCK_B2_Y <= pixel_y)
+                        && (pixel_y < BLOCK_B2_Y + BLOCK_HEIGHT_1)
+
+                        && (BLOCK_Y3_X <= pixel_x )
+                        && (pixel_x < BLOCK_Y3_X + BLOCK_WIDTH)
+                        && (BLOCK_Y3_Y <= pixel_y)
+                        && (pixel_y < BLOCK_Y3_Y + BLOCK_HEIGHT)
+                        ;
+
     assign vga = vga_reg;
 
 endmodule
