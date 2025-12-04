@@ -28,7 +28,7 @@ module TOP_VGA #(
 	input wire rst,
 	
 	/* Block ram interface */
-    input wire [2:0] y_offset_sw,
+    input wire [3:0] y_offset,
 	inout wire [7:0] din,
     output wire WES,
     output reg [7:0] dout,
@@ -55,15 +55,9 @@ wire [18:0] raddr;
 //wire [3:0] XY = 3'b010;
 wire [3:0] XY = 3'b000;
 wire [3:0] YY;
-assign YY = y_offset_sw;
-assign Xoffset = {XY_fixed, 6'd0}; 
-assign Yoffset = {YY, 5'd0};  
-
-
-
-
+assign YY = y_offset;
 assign Xoffset = {XY,6'd00};
-assign Yoffset = {XY,5'd00};
+assign Yoffset = {YY,5'd00};
 
 
 localparam XRES = 640;

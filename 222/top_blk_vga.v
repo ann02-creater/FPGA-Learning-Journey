@@ -29,7 +29,10 @@ module top_blk_vga(
     input            enable_memw,    // Mem Write enable -> port A enable
     input            enable_vga,     // VGA enable
     //switch
-    input     [3:0]   sw,     
+    input     [3:0]   sw,
+    // PS/2 keyboard
+    input            ps2_clk,
+    input            ps2_data,
     // VGA pins
     output    [7:0]   rgb,
     output            hsyncb,
@@ -41,6 +44,9 @@ wire enable_vga_tg;
 wire [18:0]ADDR_vga2mem, ADDR_ctrl2mem;
 wire [7:0] D_mem2vga, D_mem2ctrl, D_ctrl2mem;
 wire wea;
+wire [7:0] ps2_code;
+wire ps2_code_ready;
+wire [3:0] y_offset;
 
 assign enable_vga_tg = enable_vga & sw[0];
 //clock core 
@@ -66,10 +72,25 @@ blk_mem frame_buffer (
     .dinb(8'h00),    // input wire [7 : 0] dinb
     .doutb(D_mem2vga)  // output wire [7 : 0] doutb
     );    
+ps2_scancode kb_scanner(
+    .clk(clk_50),
+    .rst(rst),
+    .ps2_clk(ps2_clk),
+    .ps2_data(ps2_data),
+    .scancode(ps2_code),
+    .scancode_ready(ps2_code_ready)
+    );
+y_offset_ctrl y_offset_keyboard(
+    .clk(clk_50),
+    .rst(rst),
+    .scancode(ps2_code),
+    .scancode_ready(ps2_code_ready),
+    .y_offset(y_offset)
+    );
 TOP_VGA vga(
     .clk(clk_50),
     .clk_en(enable_vga_tg),
-     .y_offset_sw(sw[3:1]), 
+     .y_offset(y_offset), 
     .rst(rst),
     .din(D_mem2vga),
     .WES(),
