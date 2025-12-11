@@ -1,24 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2016/11/15 13:57:42
-// Design Name: 
-// Module Name: mem_clr
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module mem_ctlr(
         input clk,
@@ -31,10 +11,10 @@ module mem_ctlr(
         output [18:0] addr
     );
    
-   localparam CLEAR = 2'b00, SHIFTR = 2'b01, RG_SHIFTL = 2'b10;  
+   localparam OP_CLR = 2'b00, OP_SHIFTR = 2'b01, OP_RG_SHIFTL = 2'b10;  
    reg [1:0] state_reg, state_next;
    reg [18:0] addr_reg, addr_next;
-   reg [7:0] dout_reg, dout_next;
+   reg [15:0] dout_reg, dout_next;
    reg we_reg, we_next;
    reg [7:0] din_p, din_n;
    assign dout = dout_reg;
@@ -43,7 +23,7 @@ module mem_ctlr(
    
    always @(posedge clk or posedge rst)
     if (rst) begin
-        state_reg <= 2'b00;  // Fixed: was 1'b0, should be 2-bit
+        state_reg <= 2'b00;
         addr_reg <= 19'h00000;
         we_reg <= 1'b0;
         dout_reg <= 8'h00;
@@ -58,15 +38,8 @@ module mem_ctlr(
     end
     
        
-    // Combinational block - fixed to avoid latch inference
-    always @(*) begin
-        // Default assignments to prevent latches
-        state_next = state_reg;
-        addr_next = addr_reg;
-        we_next = 1'b0;
-        dout_next = dout_reg;
-        din_n = din_p;
-        
+    
+    always @ (addr_reg, we_reg, dout_reg, state_reg, en)begin
         case(state_reg)
             2'b00 :    //idle
                 if (en) begin
@@ -80,7 +53,7 @@ module mem_ctlr(
                         we_next = 1'b0;
                 end
             2'b01 : //CLEAR
-                if (mode == CLEAR) begin    
+                if (mode == OP_CLR) begin    
                     if (addr_reg < 640 * 480) begin 
                             state_next = 2'b01;
                             addr_next = addr_reg + 1'b1;
@@ -100,7 +73,7 @@ module mem_ctlr(
                     we_next = 1'b0;
                 end
             2'b10 : //SHIFTR
-                 if(mode == SHIFTR) begin
+                 if(mode == OP_SHIFTR) begin
                     if (addr_reg < 640 * 480) begin 
                          if(!we_reg) begin 
                              state_next = 2'b10;
@@ -132,7 +105,7 @@ module mem_ctlr(
                  end
          
               2'b11 : //RG_SHIFTL
-                 if(mode == RG_SHIFTL) begin
+                 if(mode == OP_RG_SHIFTL) begin
                     if (addr_reg > 0) begin 
                          if(we_reg) begin
                              state_next = 2'b11;
