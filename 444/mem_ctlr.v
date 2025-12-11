@@ -34,7 +34,7 @@ module mem_ctlr(
    localparam CLEAR = 2'b00, SHIFTR = 2'b01, RG_SHIFTL = 2'b10;  
    reg [1:0] state_reg, state_next;
    reg [18:0] addr_reg, addr_next;
-   reg [15:0] dout_reg, dout_next;
+   reg [7:0] dout_reg, dout_next;
    reg we_reg, we_next;
    reg [7:0] din_p, din_n;
    assign dout = dout_reg;
@@ -43,9 +43,9 @@ module mem_ctlr(
    
    always @(posedge clk or posedge rst)
     if (rst) begin
-        state_reg <= 1'b0;
+        state_reg <= 2'b00;  // Fixed: was 1'b0, should be 2-bit
         addr_reg <= 19'h00000;
-        we_reg <= 'b0;
+        we_reg <= 1'b0;
         dout_reg <= 8'h00;
         din_p <= 8'h00;
         end
@@ -58,8 +58,15 @@ module mem_ctlr(
     end
     
        
-    
-    always @ (addr_reg, we_reg, dout_reg, state_reg, en)begin
+    // Combinational block - fixed to avoid latch inference
+    always @(*) begin
+        // Default assignments to prevent latches
+        state_next = state_reg;
+        addr_next = addr_reg;
+        we_next = 1'b0;
+        dout_next = dout_reg;
+        din_n = din_p;
+        
         case(state_reg)
             2'b00 :    //idle
                 if (en) begin

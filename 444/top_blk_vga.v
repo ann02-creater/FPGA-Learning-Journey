@@ -47,8 +47,9 @@ wire wea;
 wire [7:0] ps2_code;
 wire ps2_code_ready;
 wire [3:0] y_offset;
+wire [1:0] mode = 2'b00;  // Default: CLEAR mode (메모리 초기화 모드)
 
-assign enable_vga_tg = enable_vga & sw[0];
+// enable_vga_tg는 debounce_vga 모듈의 toggle 출력으로 사용됨
 //clock core 
 clk_wiz_0 clk_core (
     .clk_in1(clk),      
@@ -60,7 +61,7 @@ clk_wiz_0 clk_core (
     );       
 //frame_buffer. simple dual block ram
 // port A for writing port B for reading mainly    
-blk_mem frame_buffer (
+blk_mem_gen_0 frame_buffer (
     .clka(clk_100),    // input wire clka
     .wea(wea),      // input wire [0 : 0] wea
     .addra(ADDR_ctrl2mem),  // input wire [18 : 0] addra
@@ -89,11 +90,9 @@ ps2_arrow_yoffset_top #(
 TOP_VGA vga(
     .clk(clk_50),
     .clk_en(enable_vga_tg),
-     .y_offset(y_offset), 
+    .y_offset(y_offset), 
     .rst(rst),
     .din(D_mem2vga),
-    .WES(),
-    .dout(),
     .addr(ADDR_vga2mem),
     .rgb(rgb),
     .hsyncb(hsyncb),

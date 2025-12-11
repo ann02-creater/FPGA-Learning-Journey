@@ -1,6 +1,7 @@
 `timescale 1ns / 1ps
 
-
+// Debounce module - Fixed gated clock issue
+// Changed toggle logic from using 'tick' as clock to synchronous logic
 module debounce(
     input clk,
     input rst,
@@ -10,22 +11,26 @@ module debounce(
     );
 
 reg d1, d2;
-always @(posedge clk, posedge rst)
+wire tick_internal;
+
+always @(posedge clk or posedge rst)
     if( rst ) begin
-       d1 <= 'b0;
-       d2 <= 'b0;
+       d1 <= 1'b0;
+       d2 <= 1'b0;
     end
     else begin
        d1 <= din;
        d2 <= d1;
     end
 
-assign tick = d1 & ~ d2;
+assign tick_internal = d1 & ~d2;
+assign tick = tick_internal;
  
-always @ (posedge rst, posedge tick)
+// Fixed: Use synchronous logic instead of gated clock
+always @(posedge clk or posedge rst)
    if( rst )
-       toggle <= 'b0;
-   else if ( tick )
-       toggle <= ~ toggle;
+       toggle <= 1'b0;
+   else if ( tick_internal )
+       toggle <= ~toggle;
 
 endmodule

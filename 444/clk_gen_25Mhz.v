@@ -25,14 +25,11 @@ module clk_gen_25Mhz(
     output reg clk25Mhz
     );
 
-
-
-
-
-always @(posedge clk50Mhz, posedge rst)
-	if (rst)
-		clk25Mhz <= 0;
-	else if(clk_en)
-		clk25Mhz <= clk25Mhz + 1;
-		
+// Fixed: Use explicit toggle operation instead of +1 for clarity
+always @(posedge clk50Mhz or posedge rst)
+    if (rst)
+        clk25Mhz <= 1'b0;
+    else if(clk_en)
+        clk25Mhz <= ~clk25Mhz;  // Toggle for divide-by-2
+            
 endmodule
